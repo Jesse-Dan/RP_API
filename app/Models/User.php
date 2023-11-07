@@ -18,9 +18,20 @@ class User extends Authenticatable
      * @var array<int, string>
      */
     protected $fillable = [
-        'name',
+        'first_name',
+        'last_name',
         'email',
+        'country',
+        'followers',
+        'following',
+        'posts',
+        'account_type',
+        // BLOCKED-REPORTED-ONINE
+        'active_atatus',
+        'state',
+        'secreat_key',
         'password',
+       'confirm_password',
     ];
 
     /**
@@ -29,8 +40,9 @@ class User extends Authenticatable
      * @var array<int, string>
      */
     protected $hidden = [
-        'password',
-        'remember_token',
+       
+
+       
     ];
 
     /**
