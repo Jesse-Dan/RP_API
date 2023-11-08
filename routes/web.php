@@ -10,9 +10,10 @@ Route::group(['prefix' => '/auth'], function () {
         Route::get('/token',[AuthenticationController::class, 'generateCsfr']);
         Route::post('/login',[AuthenticationController::class, 'login']);
         Route::post('/register',[AuthenticationController::class, 'register']);
-        Route::any('/logout',[AuthenticationController::class, 'logout']);
+        Route::any('/logout/{userId}',[AuthenticationController::class, 'logout'])->middleware('isLoggedIn')->middleware('auth:sanctum');
     
 });
+
 
 Route::group(['prefix' => 'app'], function () {
 
