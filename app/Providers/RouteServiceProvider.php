@@ -8,6 +8,11 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Facades\Route;
 
+use App\Models\User;
+use Closure;
+use Symfony\Component\HttpFoundation\Response;
+use Session;
+
 class RouteServiceProvider extends ServiceProvider
 {
     /**
@@ -22,19 +27,33 @@ class RouteServiceProvider extends ServiceProvider
     /**
      * Define your route model bindings, pattern filters, and other route configuration.
      */
-    public function boot(): void
+    public function boot()
     {
-        RateLimiter::for('api', function (Request $request) {
-            return Limit::perMinute(60)->by($request->user()?->id ?: $request->ip());
-        });
+        if (!(Session()->has('loginId'))) {
+            $user = User::where('id', '=', Session::get('loginId'))->first();
+            if ($user) {$user->revoke();
 
-        $this->routes(function () {
-            Route::middleware('api')
-                ->prefix('api')
-                ->group(base_path('routes/api.php'));
+                return  response()->json([
+                    'status' => false,
+                    'status_code' => 400,
+                    'message' => 'Unauthenticated'
+                ], 300);
 
-            Route::middleware('web')
-                ->group(base_path('routes/web.php'));
-        });
+                        } else {
+                RateLimiter::for('web', function (Request $request) {
+                    return Limit::perMinute(/*60*/20)->by($request->user()?->id ?: $request->ip());
+                });
+
+                $this->routes(function () {
+                    Route::middleware('web')
+                        ->prefix('web')
+                        ->group(base_path('routes/web.php'));
+
+                    Route::middleware('web')
+                        ->group(base_path('routes/web.php'));
+                });
+            }
+        }
+
     }
 }
