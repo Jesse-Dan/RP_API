@@ -24,7 +24,12 @@ class Handler extends ExceptionHandler
     public function register(): void
     {
         $this->reportable(function (Throwable $e) {
-            //
+            return response()->json([
+                'status' => false,
+                'statusCode' => 500,
+                'message' => 'An Error Occured.',
+                'data' => $e,
+            ], 500);
         });
     }
 }
