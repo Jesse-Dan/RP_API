@@ -18,14 +18,19 @@ class Authenticate
     {
         if(!(Session()->has('loginId'))){
             $user = User::where('id', '=', Session::get('loginId'))->first();
-            $user->revoke();
+            if ($user){$user->revoke();
             return response()->json([
                 'status' => false,
                 'status_code' => 400,
                 'message' => 'No Active session'
-            ], 300); 
-        
+            ], 300); }else{
+                return  response()->json([
+                    'status' => false,
+                    'status_code' => 400,
+                    'message' => 'Unauthenticated'
+                ], 300);
+            }
         }
-        return $next($request);
+       return $next($request);
     }
 }
